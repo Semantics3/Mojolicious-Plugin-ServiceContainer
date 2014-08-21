@@ -7,7 +7,7 @@ use 5.012;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Exception;
 
-our $VERSION = "0.1.0";
+our $VERSION = "0.1.1";
 
 sub register {
     my ( $plugin, $app ) = @_;
@@ -131,8 +131,15 @@ Mojolicious::Plugin::ServiceContainer - A Dependency Injection Container impleme
 
 =head1 SYNOPSIS
 
+For a regular Mojolicious application, you can load this plugin using the C<plugin> method.
+
   $self->plugin( 'ConfigApi' );
   $self->plugin( 'ServiceContainer' );
+
+For a Mojolicious::Lite application, you can use the C<plugin> directive.
+
+  plugin 'ConfigApi';
+  plugin 'ServiceContainer';
 
 =head1 DESCRIPTION
 
@@ -141,7 +148,7 @@ L<Mojolicious>.
 
 A service, for the purposes of this plugin, is defined as a I<class> (any module that inherits from L<Mojo::Base>), 
 which is responsible for performing a single role within your application. A service class must be 
-instantiable by simply doing a C<MyService->new> call. Database connections, Email senders, HTTP clients can be
+instantiable by simply doing a C<MyService-E<gt>new> call. Database connections, Email senders, HTTP clients can be
 considered as services.
 
 A service object is an instance of the service class. An assumption that is taken here is that a single service 
@@ -172,8 +179,8 @@ For example, if you are using the C<YAMLConfig> plugin, your configuration file 
             helper: 'log'
   ...
 
-The service definitions are contained in a C<services> object. Each key of the object is the name used to  
-refer to a given service within your application.
+The service definitions are contained in a C<services> object. Each key of the object is the name used to refer 
+to a given service within your application.
 
 Each service definition may have one or more of the following keys:
 
@@ -183,8 +190,8 @@ Each service definition may have one or more of the following keys:
 C<class> I<required> B<string>: Name of the class (i.e. module) that the service is referring to.
   
 =item *
-C<helper> I<optional> B<string>: Name of the factory helper method that will already give us the service object
-when called. The usefullness of this option depends on the other plugins that your application has loaded.
+C<helper> I<optional> B<string>: Name of the factory helper method that will already return the service object 
+when called. The usefulness of this option depends on the other plugins that your application is using.
   
 =item *
 C<args> I<optional> B<arrayref> or B<hashref>: The dependencies of your service. Static values will be 
@@ -201,7 +208,7 @@ your application.
 
 =head2 service
 
-  my $mango = $c->service( 'mongo' );
+  my $mango = $c->service( 'google_auth' );
 
 Inside any of your controllers, you can inject a service object by using the C<service> helper. The only 
 argument passed is the name of the service as given in the service definition.

@@ -52,5 +52,19 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "0.1.0"
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/Semantics3/Mojolicious-Plugin-ServiceContainer/issues"
+      },
+      "homepage" : "https://github.com/Semantics3/Mojolicious-Plugin-ServiceContainer",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/Semantics3/Mojolicious-Plugin-ServiceContainer.git",
+         "web" : "https://github.com/Semantics3/Mojolicious-Plugin-ServiceContainer"
+      }
+   },
+   "version" : "0.1.1",
+   "x_contributors" : [
+      "Amarnath Ravikumar <amar@semantics3.com>"
+   ]
 }

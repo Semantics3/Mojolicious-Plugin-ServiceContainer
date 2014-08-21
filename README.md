@@ -86,9 +86,6 @@ argument passed is the name of the service as given in the service definition.
 
 Copyright (C) 2014 Semantics3 Inc.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
 # AUTHOR
 
 Amarnath Ravikumar <amar@semantics3.com>

@@ -222,9 +222,6 @@ L<Mojolicious::Plugin::ServiceContainer> inherits all methods from L<Mojolicious
 
 Copyright (C) 2014 Semantics3 Inc.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
 =head1 AUTHOR
 
 Amarnath Ravikumar E<lt>amar@semantics3.comE<gt>

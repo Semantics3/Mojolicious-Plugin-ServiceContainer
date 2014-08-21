@@ -7,7 +7,7 @@ use 5.012;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Exception;
 
-our $VERSION = "0.1.1";
+our $VERSION = "0.1.2";
 
 sub register {
     my ( $plugin, $app ) = @_;

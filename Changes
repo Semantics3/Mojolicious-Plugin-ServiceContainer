@@ -4,3 +4,5 @@ Revision history for Perl extension Mojolicious-Plugin-ServiceContainer
 
     - Minor README fixes.
 
+    - Initial release.
+

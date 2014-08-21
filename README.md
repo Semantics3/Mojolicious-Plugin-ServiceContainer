@@ -29,7 +29,8 @@ object for a given service is sufficient for the runtime of the application. In 
 permit the creation of more service objects for the same service.
 
 The dependencies between services are listed in the application's configuration file under the `services` field.
-For example, if you are using the `YAMLConfig` plugin, your configuration file might look something like this:
+For example, if you are using the [Mojolicious::Plugin::YAMLConfig](https://metacpan.org/pod/Mojolicious::Plugin::YAMLConfig) plugin, your configuration file might 
+look something like this:
 
     ...
     - services:
@@ -72,7 +73,7 @@ your application.
 
 ## service
 
-    my $mango = $c->service( 'google_auth' );
+    my $authService = $c->service( 'google_auth' );
 
 Inside any of your controllers, you can inject a service object by using the `service` helper. The only 
 argument passed is the name of the service as given in the service definition.

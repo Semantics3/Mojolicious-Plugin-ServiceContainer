@@ -1,0 +1,4 @@
+name = "Mojolicious-Plugin-ServiceContainer"
+# badges = ["travis"]
+module_maker="ModuleBuildTiny"
+

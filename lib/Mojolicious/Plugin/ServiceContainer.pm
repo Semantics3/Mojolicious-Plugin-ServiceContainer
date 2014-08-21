@@ -156,7 +156,7 @@ object for a given service is sufficient for the runtime of the application. In 
 permit the creation of more service objects for the same service.
 
 The dependencies between services are listed in the application's configuration file under the C<services> field.
-For example, if you are using the L<Mojolicious::Plugin::YAMLConfig> plugin, your configuration file might 
+For example, if you are using the L<Mojolicious::Plugin::YamlConfig> plugin, your configuration file might 
 look something like this:
 
   ...

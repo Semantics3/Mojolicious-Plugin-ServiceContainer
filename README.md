@@ -29,7 +29,7 @@ object for a given service is sufficient for the runtime of the application. In 
 permit the creation of more service objects for the same service.
 
 The dependencies between services are listed in the application's configuration file under the `services` field.
-For example, if you are using the [Mojolicious::Plugin::YAMLConfig](https://metacpan.org/pod/Mojolicious::Plugin::YAMLConfig) plugin, your configuration file might 
+For example, if you are using the [Mojolicious::Plugin::YamlConfig](https://metacpan.org/pod/Mojolicious::Plugin::YamlConfig) plugin, your configuration file might 
 look something like this:
 
     ...

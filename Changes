@@ -2,6 +2,10 @@ Revision history for Perl extension Mojolicious-Plugin-ServiceContainer
 
 {{$NEXT}}
 
+0.1.4 2014-08-22T06:54:55Z
+
+     - Fixed the context from which the helper was being invoked from.
+
 0.1.3 2014-08-21T21:18:54Z
 
      - One last README edit for now.

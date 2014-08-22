@@ -59,14 +59,16 @@ to a given service within your application.
 Each service definition may have one or more of the following keys:
 
 - `class` _required_ **string**: Name of the class (i.e. module) that the service is referring to.
-- `helper` _optional_ **string**: Name of the factory helper method that will already return the service object 
-when called. The usefulness of this option depends on the other plugins that your application is using.
+- `helper` _optional_ **string**: Name of a Mojolicious helper method that behaves like a factory and will return 
+a service object when called. The helper will be called in the context of the [Mojolicious](https://metacpan.org/pod/Mojolicious) application object.
+You can use any relevant default helper or a custom one. The assumption here is that the helper will return the 
+same singleton everytime but this may or may not be the case depending on the helper implementation.
 - `args` _optional_ **arrayref** or **hashref**: The dependencies of your service. Static values will be 
 passed as is to the constructor of the service. Dependent services are referred to by their names prefixed 
 by the `$` sign. Eg. `$mongo`. Dependent services are first resolved (i.e. their own dependencies are 
 resolved) before they are injected into the original service's constructor.
 
-As the services definitions are listed in the configuration file, they are immutable during the runtime of 
+As the service definitions are listed in the configuration file, they are immutable during the runtime of 
 your application.
 
 # HELPERS

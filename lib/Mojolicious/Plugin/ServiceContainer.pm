@@ -7,7 +7,7 @@ use 5.012;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Exception;
 
-our $VERSION = "0.1.3";
+our $VERSION = "0.1.4";
 
 sub register {
     my ( $plugin, $app ) = @_;
@@ -40,7 +40,6 @@ sub register {
                 elsif ( ref( $args ) eq 'HASH' ) {
                     $args->{$index} = _inject( $c, $name );
                 }
-                
             }
         }
         return $args;
@@ -57,7 +56,7 @@ sub register {
     # $c - Mojolicious Controller.
     # $name - Name of the service.
     #------------------------------------------------------------------------------
-    # Either Returns a service object
+    # Either returns a service object
     # (or) throws an exception if any of the service dependencies is not valid.
     #------------------------------------------------------------------------------
     sub _inject {
@@ -91,7 +90,7 @@ sub register {
         #-- Exit early if there is a helper that we can use.
         if ( defined( $serviceConfig->{$name}->{helper} ) ) {
             my $helper = $serviceConfig->{$name}->{helper};
-            $serviceObjectCache->{$name} = $c->$helper();
+            $serviceObjectCache->{$name} = $c->app->$helper();
             $c->app->log->debug( sprintf( 'Used object from helper %s for the %s service.', $helper, $name ) );
             return $serviceObjectCache->{$name};
         }
@@ -191,8 +190,10 @@ Each service definition may have one or more of the following keys:
 C<class> I<required> B<string>: Name of the class (i.e. module) that the service is referring to.
   
 =item *
-C<helper> I<optional> B<string>: Name of the factory helper method that will already return the service object 
-when called. The usefulness of this option depends on the other plugins that your application is using.
+C<helper> I<optional> B<string>: Name of a Mojolicious helper method that behaves like a factory and will return 
+a service object when called. The helper will be called in the context of the L<Mojolicious> application object.
+You can use any relevant default helper or a custom one. The assumption here is that the helper will return the 
+same singleton everytime but this may or may not be the case depending on the helper implementation.
   
 =item *
 C<args> I<optional> B<arrayref> or B<hashref>: The dependencies of your service. Static values will be 
@@ -202,7 +203,7 @@ resolved) before they are injected into the original service's constructor.
 
 =back
 
-As the services definitions are listed in the configuration file, they are immutable during the runtime of 
+As the service definitions are listed in the configuration file, they are immutable during the runtime of 
 your application.
 
 =head1 HELPERS

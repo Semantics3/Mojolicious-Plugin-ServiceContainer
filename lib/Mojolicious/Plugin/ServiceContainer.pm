@@ -7,7 +7,7 @@ use 5.012;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Exception;
 
-our $VERSION = "0.1.4";
+our $VERSION = "0.1.5";
 
 sub register {
     my ( $plugin, $app ) = @_;
@@ -97,7 +97,8 @@ sub register {
 
         #-- Check if the class can be imported.
         #-- http://stackoverflow.com/q/1917261/273493
-        eval { my $import = "use $class;" };
+        eval "use $class;";
+        die $@ if $@;
 
         #-- Resolve dependencies.
         my $args = _resolve( $c, $serviceConfig->{$name}->{args} );

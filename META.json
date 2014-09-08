@@ -63,7 +63,7 @@
          "web" : "https://github.com/Semantics3/Mojolicious-Plugin-ServiceContainer"
       }
    },
-   "version" : "0.1.5",
+   "version" : "0.1.6",
    "x_contributors" : [
       "Amarnath Ravikumar <amar@semantics3.com>"
    ]

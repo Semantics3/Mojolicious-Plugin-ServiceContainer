@@ -7,7 +7,7 @@ use 5.012;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Exception;
 
-our $VERSION = "0.1.5";
+our $VERSION = "0.1.6";
 
 sub register {
     my ( $plugin, $app ) = @_;
@@ -104,8 +104,12 @@ sub register {
         my $args = _resolve( $c, $serviceConfig->{$name}->{args} );
 
         #-- Build the object and cache it.
-        $serviceObjectCache->{$name} = $class->new( @$args ) if ( ref( $args ) eq 'ARRAY' );
-        if ( !defined(  $serviceObjectCache->{$name} ) ) {
+        #-- If a service has Mojolicious as a dependency, return a reference to the current app.
+        $serviceObjectCache->{$name} = $c->app if ( $class =~ /Mojolicious/ );
+        if ( !defined( $serviceObjectCache->{$name} ) ) {
+            $serviceObjectCache->{$name} = $class->new( @$args ) if ( ref( $args ) eq 'ARRAY' );
+        }
+        if ( !defined( $serviceObjectCache->{$name} ) ) {
             $serviceObjectCache->{$name} = $class->new( $args );
         }
         $c->app->log->debug( sprintf( 'Built an object of %s for the %s service.', $class, $name ) );

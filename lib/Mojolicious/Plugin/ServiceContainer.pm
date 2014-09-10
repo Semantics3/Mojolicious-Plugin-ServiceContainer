@@ -135,12 +135,12 @@ Mojolicious::Plugin::ServiceContainer - A Dependency Injection Container impleme
 
 =head1 SYNOPSIS
 
-For a regular Mojolicious application, you can load this plugin using the C<plugin> method.
+For a regular L<Mojolicious> application, you can load this plugin using the C<plugin> method.
 
   $self->plugin( 'ConfigApi' );
   $self->plugin( 'ServiceContainer' );
 
-For a Mojolicious::Lite application, you can use the C<plugin> directive.
+For a L<Mojolicious::Lite> application, you can use the C<plugin> directive.
 
   plugin 'ConfigApi';
   plugin 'ServiceContainer';
@@ -193,6 +193,9 @@ Each service definition may have one or more of the following keys:
 
 =item *
 C<class> I<required> B<string>: Name of the class (i.e. module) that the service is referring to.
+**Note**: If your class is C<Mojolicious>, you will be passed a reference to the running application and not 
+a new instance of the C<Mojolicious> class like other services. This is a way by which you can use the
+application helpers from within your service.
   
 =item *
 C<helper> I<optional> B<string>: Name of a Mojolicious helper method that behaves like a factory and will return 

@@ -3,6 +3,7 @@ Revision history for Perl extension Mojolicious-Plugin-ServiceContainer
 {{$NEXT}}
 
 0.1.6 2014-09-08T10:52:23Z
+      
       - Allow services to get a reference to the running Mojolicious app as a dependency.
 
 0.1.5 2014-09-05T09:48:04Z

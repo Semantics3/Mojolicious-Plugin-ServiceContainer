@@ -193,7 +193,8 @@ Each service definition may have one or more of the following keys:
 
 =item *
 C<class> I<required> B<string>: Name of the class (i.e. module) that the service is referring to.
-**Note**: If your class is C<Mojolicious>, you will be passed a reference to the running application and not 
+
+B<Note>: If your class is C<Mojolicious>, you will be passed a reference to the running application and not 
 a new instance of the C<Mojolicious> class like other services. This is a way by which you can use the
 application helpers from within your service.
   

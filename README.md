@@ -59,9 +59,11 @@ to a given service within your application.
 Each service definition may have one or more of the following keys:
 
 - `class` _required_ **string**: Name of the class (i.e. module) that the service is referring to.
-\*\*Note\*\*: If your class is `Mojolicious`, you will be passed a reference to the running application and not 
-a new instance of the `Mojolicious` class like other services. This is a way by which you can use the
-application helpers from within your service.
+
+    **Note**: If your class is `Mojolicious`, you will be passed a reference to the running application and not 
+    a new instance of the `Mojolicious` class like other services. This is a way by which you can use the
+    application helpers from within your service.
+
 - `helper` _optional_ **string**: Name of a Mojolicious helper method that behaves like a factory and will return 
 a service object when called. The helper will be called in the context of the [Mojolicious](https://metacpan.org/pod/Mojolicious) application object.
 You can use any relevant default helper or a custom one. The assumption here is that the helper will return the 

@@ -2,8 +2,15 @@ Revision history for Perl extension Mojolicious-Plugin-ServiceContainer
 
 {{$NEXT}}
 
+1.0.0 2016-10-15T11:54:44Z
+
+      - Initial public release
+      - New API
+      - Removed dependency on internal ConfigApi plugin
+      - Added tests
+
 0.1.6 2014-09-08T10:52:23Z
-      
+
       - Allow services to get a reference to the running Mojolicious app as a dependency.
 
 0.1.5 2014-09-05T09:48:04Z
@@ -31,4 +38,3 @@ Revision history for Perl extension Mojolicious-Plugin-ServiceContainer
     - Minor README fixes.
 
     - Initial release.
-

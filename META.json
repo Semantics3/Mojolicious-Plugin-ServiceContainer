@@ -65,7 +65,7 @@
          "web" : "https://github.com/Semantics3/Mojolicious-Plugin-ServiceContainer"
       }
    },
-   "version" : "0.1.6",
+   "version" : "1.0.0",
    "x_contributors" : [
       "amarnus <amar@semantics3.com>"
    ]

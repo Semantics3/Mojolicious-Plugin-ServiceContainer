@@ -8,7 +8,7 @@ use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Exception;
 use Mojo::Loader qw( load_class );
 
-our $VERSION = "0.1.6";
+our $VERSION = "1.0.0";
 
 sub register {
     my ( $plugin, $app, $config ) = @_;

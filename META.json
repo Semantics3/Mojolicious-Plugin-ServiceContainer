@@ -1,5 +1,5 @@
 {
-   "abstract" : "A Dependency Injection Container implementation.",
+   "abstract" : "A Dependency Injection Container for Mojolicious.",
    "author" : [
       "Semantics3 Inc."
    ],

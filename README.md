@@ -4,76 +4,72 @@ Mojolicious::Plugin::ServiceContainer - A Dependency Injection Container impleme
 
 # SYNOPSIS
 
-For a regular [Mojolicious](https://metacpan.org/pod/Mojolicious) application, you can load this plugin using the `plugin` method.
+For a regular [Mojolicious](https://metacpan.org/pod/Mojolicious) application, you can load this plugin using the `plugin` method:
 
-    $self->plugin( 'ConfigApi' );
-    $self->plugin( 'ServiceContainer' );
+    $self->plugin( 'ServiceContainer', {} );
 
-For a [Mojolicious::Lite](https://metacpan.org/pod/Mojolicious::Lite) application, you can use the `plugin` directive.
+For a [Mojolicious::Lite](https://metacpan.org/pod/Mojolicious::Lite) application, you can use the `plugin` directive:
 
-    plugin 'ConfigApi';
-    plugin 'ServiceContainer';
+    plugin 'ServiceContainer' => {};
 
 # DESCRIPTION
 
-[Mojolicious::Plugin::ServiceContainer](https://metacpan.org/pod/Mojolicious::Plugin::ServiceContainer) is a minimal Dependency Injection Container implementation for 
+[Mojolicious::Plugin::ServiceContainer](https://metacpan.org/pod/Mojolicious::Plugin::ServiceContainer) is a minimal Dependency Injection Container implementation for
 [Mojolicious](https://metacpan.org/pod/Mojolicious).
 
-A service, for the purposes of this plugin, is defined as a _class_ (any module that inherits from [Mojo::Base](https://metacpan.org/pod/Mojo::Base)), 
-which is responsible for performing a single role within your application. A service class must be 
+A service, for the purposes of this plugin, is defined as a _class_ (any module that inherits from [Mojo::Base](https://metacpan.org/pod/Mojo::Base)),
+which is responsible for performing a single role within your application. A service class must be
 instantiable by simply doing a `MyService->new` call. Database connections, Email senders, HTTP clients can be
 considered as services.
 
-A service object is an instance of the service class. An assumption that is taken here is that a single service 
-object for a given service is sufficient for the runtime of the application. In a future version, the API might 
+A service object is an instance of the service class. An assumption that is taken here is that a single service
+object for a given service is sufficient for the runtime of the application. In a future version, the API might
 permit the creation of more service objects for the same service.
 
-The dependencies between services are listed in the application's configuration file under the `services` field.
-For example, if you are using the [Mojolicious::Plugin::YamlConfig](https://metacpan.org/pod/Mojolicious::Plugin::YamlConfig) plugin, your configuration file might 
-look something like this:
+The service definitions are loaded along with the plugin:
 
-    ...
-    - services:
-          google_auth:
-              class: 'MyGoogleAuthService'
-              args:
-                  client_id: xxxx.xxxx.xxxx.xxxx
-                  client_secret: xxxx.xxxx.xxxx.xxxx
-                  ua: '$ua'
-                  log: '$log'
-          mongo:
-              class: 'Mango'
-              args:
-                  - 'mongodb://localhost'
-          ua:
-              class: Mojo::UserAgent
-              helper: 'ua'
-          log:
-              class: Mojo::Log
-              helper: 'log'
-    ...
-
-The service definitions are contained in a `services` object. Each key of the object is the name used to refer 
-to a given service within your application.
+plugin 'ServiceContainer' => {
+  services: {
+    google\_auth => {
+      class => 'MyGoogleAuthService',
+      client\_id => 'xxxx.xxxx.xxxx.xxxx',
+      client\_secret => 'yyyy.yyyy.yyyy.yyyy',
+      ua => '$ua',
+      log => '$log'
+    },
+    mongo => {
+      class => 'Mango',
+      args => \[
+        'mongodb://localhost'
+      \]
+    },
+    ua => {
+      helper => 'ua'
+    },
+    log => {
+      helper => 'log'
+    }
+  }
+}
 
 Each service definition may have one or more of the following keys:
 
-- `class` _required_ **string**: Name of the class (i.e. module) that the service is referring to.
+- `class` **string**: Name of the class (i.e. module) that the service is referring to.
 
-    **Note**: If your class is `Mojolicious`, you will be passed a reference to the running application and not 
+    **Note**: If your class is `Mojolicious`, you will be passed a reference to the running application and not
     a new instance of the `Mojolicious` class like other services. This is a way by which you can use the
     application helpers from within your service.
 
-- `helper` _optional_ **string**: Name of a Mojolicious helper method that behaves like a factory and will return 
+- `helper` _optional_ **string**: Name of a Mojolicious helper method that behaves like a factory and will return
 a service object when called. The helper will be called in the context of the [Mojolicious](https://metacpan.org/pod/Mojolicious) application object.
-You can use any relevant default helper or a custom one. The assumption here is that the helper will return the 
+You can use any relevant default helper or a custom one. The assumption here is that the helper will return the
 same singleton everytime but this may or may not be the case depending on the helper implementation.
-- `args` _optional_ **arrayref** or **hashref**: The dependencies of your service. Static values will be 
-passed as is to the constructor of the service. Dependent services are referred to by their names prefixed 
-by the `$` sign. Eg. `$mongo`. Dependent services are first resolved (i.e. their own dependencies are 
+- `args` _optional_ **arrayref** or **hashref**: The dependencies of your service. Static values will be
+passed as is to the constructor of the service. Dependent services are referred to by their names prefixed
+by the `$` sign. Eg. `$mongo`. Dependent services are first resolved (i.e. their own dependencies are
 resolved) before they are injected into the original service's constructor.
 
-As the service definitions are listed in the configuration file, they are immutable during the runtime of 
+As the service definitions are listed in the configuration file, they are immutable during the runtime of
 your application.
 
 # HELPERS
@@ -82,7 +78,7 @@ your application.
 
     my $authService = $c->service( 'google_auth' );
 
-Inside any of your controllers, you can inject a service object by using the `service` helper. The only 
+Inside any of your controllers, you can inject a service object by using the `service` helper. The only
 argument passed is the name of the service as given in the service definition.
 
 # METHODS
@@ -91,7 +87,7 @@ argument passed is the name of the service as given in the service definition.
 
 # LICENSE
 
-Copyright (C) 2014 Semantics3 Inc.
+Copyright (C) 2016 Semantics3 Inc.
 
 # AUTHOR
 

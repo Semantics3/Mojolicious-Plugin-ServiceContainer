@@ -6,20 +6,22 @@ use 5.012;
 
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Exception;
+use Mojo::Loader qw( load_class );
 
 our $VERSION = "0.1.6";
 
 sub register {
-    my ( $plugin, $app ) = @_;
+    my ( $plugin, $app, $config ) = @_;
 
+    our $serviceConfig = $config // {};
     $app->log->debug( 'Registering the ServiceContainer plugin.' );
 
     #------------------------------------------------------------------------------
     # Recursively resolves a set of service dependencies.
     #------------------------------------------------------------------------------
     # - Dependencies can either be represented either as an arrayref or a hashref.
-    # - If one of the dependencies is itself a service (string prefixed by a $), 
-    #   it is first resolved before the next dependency is inspected. In other 
+    # - If one of the dependencies is itself a service (string prefixed by a $),
+    #   it is first resolved before the next dependency is inspected. In other
     #   words, the dependency tree is traversed in a depth-first manner.
     #------------------------------------------------------------------------------
     # $c - Mojolicious Controller.
@@ -30,6 +32,7 @@ sub register {
     #------------------------------------------------------------------------------
     sub _resolve {
         my ( $c, $args ) = @_;
+        $args //= {};
         while ( my ( $index, $arg ) = each $args ) {
             #-- We only care about service dependencies i.e. the deps starting with a $.
             if ( substr( $arg, 0, 1 ) eq '$' ) {
@@ -63,10 +66,7 @@ sub register {
         my ( $c, $name ) = @_;
         $name = lc $name;
 
-        #-- Static variables
-        state $serviceConfig = $c->app->conf_get('services');
         state $serviceObjectCache = {};
-
 
         #-- Exit early if we can find a service object in our cache.
         if ( defined( $serviceObjectCache->{$name} ) ) {
@@ -78,15 +78,6 @@ sub register {
             Mojo::Exception->throw( sprintf( 'Unknown service: %s', $name ) );
         }
 
-        #-- Ensure found service has been mapped to a class.
-        my $class;
-        if ( !defined( $serviceConfig->{$name}->{class} ) ) {
-            Mojo::Exception->throw( 
-                sprintf( 'Service %s does not have an associated class specified.', $name )
-            );
-        }
-        $class = $serviceConfig->{$name}->{class};
-
         #-- Exit early if there is a helper that we can use.
         if ( defined( $serviceConfig->{$name}->{helper} ) ) {
             my $helper = $serviceConfig->{$name}->{helper};
@@ -95,23 +86,31 @@ sub register {
             return $serviceObjectCache->{$name};
         }
 
-        #-- Check if the class can be imported.
-        #-- http://stackoverflow.com/q/1917261/273493
-        eval "use $class;";
-        die $@ if $@;
-
-        #-- Resolve dependencies.
-        my $args = _resolve( $c, $serviceConfig->{$name}->{args} );
-
-        #-- Build the object and cache it.
-        #-- If a service has Mojolicious as a dependency, return a reference to the current app.
-        $serviceObjectCache->{$name} = $c->app if ( $class =~ /Mojolicious/ );
-        if ( !defined( $serviceObjectCache->{$name} ) ) {
-            $serviceObjectCache->{$name} = $class->new( @$args ) if ( ref( $args ) eq 'ARRAY' );
+        #-- Ensure found service has been mapped to a class.
+        if ( !defined( $serviceConfig->{$name}->{class} ) ) {
+            Mojo::Exception->throw(
+                sprintf( 'Service %s does not have an associated class specified.', $name )
+            );
         }
-        if ( !defined( $serviceObjectCache->{$name} ) ) {
+
+        my $class = $serviceConfig->{$name}->{class};
+        if ( $class =~ /Mojolicious/ ) {
+            #-- If a service has Mojolicious as a dependency, return a reference to the current app.
+            $serviceObjectCache->{$name} = $c->app;
+            return $serviceObjectCache->{$name};
+        }
+
+        my $e = load_class $class;
+        die qq{ Loading "$class" failed: $e } if $e;
+
+        my $args = _resolve( $c, $serviceConfig->{$name}->{args} );
+        if ( ref( $args ) eq 'ARRAY' ) {
+            $serviceObjectCache->{$name} = $class->new( @$args ) ;
+        }
+        else {
             $serviceObjectCache->{$name} = $class->new( $args );
         }
+
         $c->app->log->debug( sprintf( 'Built an object of %s for the %s service.', $class, $name ) );
 
         return $serviceObjectCache->{$name};
@@ -135,84 +134,80 @@ Mojolicious::Plugin::ServiceContainer - A Dependency Injection Container impleme
 
 =head1 SYNOPSIS
 
-For a regular L<Mojolicious> application, you can load this plugin using the C<plugin> method.
+For a regular L<Mojolicious> application, you can load this plugin using the C<plugin> method:
 
-  $self->plugin( 'ConfigApi' );
-  $self->plugin( 'ServiceContainer' );
+  $self->plugin( 'ServiceContainer', {} );
 
-For a L<Mojolicious::Lite> application, you can use the C<plugin> directive.
+For a L<Mojolicious::Lite> application, you can use the C<plugin> directive:
 
-  plugin 'ConfigApi';
-  plugin 'ServiceContainer';
+  plugin 'ServiceContainer' => {};
 
 =head1 DESCRIPTION
 
-L<Mojolicious::Plugin::ServiceContainer> is a minimal Dependency Injection Container implementation for 
+L<Mojolicious::Plugin::ServiceContainer> is a minimal Dependency Injection Container implementation for
 L<Mojolicious>.
 
-A service, for the purposes of this plugin, is defined as a I<class> (any module that inherits from L<Mojo::Base>), 
-which is responsible for performing a single role within your application. A service class must be 
+A service, for the purposes of this plugin, is defined as a I<class> (any module that inherits from L<Mojo::Base>),
+which is responsible for performing a single role within your application. A service class must be
 instantiable by simply doing a C<MyService-E<gt>new> call. Database connections, Email senders, HTTP clients can be
 considered as services.
 
-A service object is an instance of the service class. An assumption that is taken here is that a single service 
-object for a given service is sufficient for the runtime of the application. In a future version, the API might 
+A service object is an instance of the service class. An assumption that is taken here is that a single service
+object for a given service is sufficient for the runtime of the application. In a future version, the API might
 permit the creation of more service objects for the same service.
 
-The dependencies between services are listed in the application's configuration file under the C<services> field.
-For example, if you are using the L<Mojolicious::Plugin::YamlConfig> plugin, your configuration file might 
-look something like this:
+The service definitions are loaded along with the plugin:
 
-  ...
-  - services:
-        google_auth:
-            class: 'MyGoogleAuthService'
-            args:
-                client_id: xxxx.xxxx.xxxx.xxxx
-                client_secret: xxxx.xxxx.xxxx.xxxx
-                ua: '$ua'
-                log: '$log'
-        mongo:
-            class: 'Mango'
-            args:
-                - 'mongodb://localhost'
-        ua:
-            class: Mojo::UserAgent
-            helper: 'ua'
-        log:
-            class: Mojo::Log
-            helper: 'log'
-  ...
-
-The service definitions are contained in a C<services> object. Each key of the object is the name used to refer 
-to a given service within your application.
+plugin 'ServiceContainer' => {
+  services: {
+    google_auth => {
+      class => 'MyGoogleAuthService',
+      client_id => 'xxxx.xxxx.xxxx.xxxx',
+      client_secret => 'yyyy.yyyy.yyyy.yyyy',
+      ua => '$ua',
+      log => '$log'
+    },
+    mongo => {
+      class => 'Mango',
+      args => [
+        'mongodb://localhost'
+      ]
+    },
+    ua => {
+      helper => 'ua'
+    },
+    log => {
+      helper => 'log'
+    }
+  }
+}
 
 Each service definition may have one or more of the following keys:
 
 =over 4
 
 =item *
-C<class> I<required> B<string>: Name of the class (i.e. module) that the service is referring to.
+C<class> B<string>: Name of the class (i.e. module) that the service is referring to.
 
-B<Note>: If your class is C<Mojolicious>, you will be passed a reference to the running application and not 
+B<Note>: If your class is C<Mojolicious>, you will be passed a reference to the running application and not
 a new instance of the C<Mojolicious> class like other services. This is a way by which you can use the
 application helpers from within your service.
-  
+
 =item *
-C<helper> I<optional> B<string>: Name of a Mojolicious helper method that behaves like a factory and will return 
+C<helper> I<optional> B<string>: Name of a Mojolicious helper method that behaves like a factory and will return
 a service object when called. The helper will be called in the context of the L<Mojolicious> application object.
-You can use any relevant default helper or a custom one. The assumption here is that the helper will return the 
+You can use any relevant default helper or a custom one. The assumption here is that the helper will return the
 same singleton everytime but this may or may not be the case depending on the helper implementation.
-  
+
 =item *
-C<args> I<optional> B<arrayref> or B<hashref>: The dependencies of your service. Static values will be 
-passed as is to the constructor of the service. Dependent services are referred to by their names prefixed 
-by the C<$> sign. Eg. C<$mongo>. Dependent services are first resolved (i.e. their own dependencies are 
+C<args> I<optional> B<arrayref> or B<hashref>: The dependencies of your service. Static values will be
+passed as is to the constructor of the service. Dependent services are referred to by their names prefixed
+by the C<$> sign. Eg. C<$mongo>. Dependent services are first resolved (i.e. their own dependencies are
 resolved) before they are injected into the original service's constructor.
 
 =back
 
-As the service definitions are listed in the configuration file, they are immutable during the runtime of 
+As the service definitions are listed in the configuration file, they are immutable during the runtime of
 your application.
 
 =head1 HELPERS
@@ -221,7 +216,7 @@ your application.
 
   my $authService = $c->service( 'google_auth' );
 
-Inside any of your controllers, you can inject a service object by using the C<service> helper. The only 
+Inside any of your controllers, you can inject a service object by using the C<service> helper. The only
 argument passed is the name of the service as given in the service definition.
 
 =head1 METHODS
@@ -230,7 +225,7 @@ L<Mojolicious::Plugin::ServiceContainer> inherits all methods from L<Mojolicious
 
 =head1 LICENSE
 
-Copyright (C) 2014 Semantics3 Inc.
+Copyright (C) 2016 Semantics3 Inc.
 
 =head1 AUTHOR
 

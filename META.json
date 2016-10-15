@@ -4,7 +4,7 @@
       "Semantics3 Inc."
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.1.1, CPAN::Meta::Converter version 2.141520",
+   "generated_by" : "Minilla/v3.0.4, CPAN::Meta::Converter version 2.142060",
    "license" : [
       "unknown"
    ],
@@ -42,11 +42,13 @@
       },
       "runtime" : {
          "requires" : {
+            "Mojolicious" : "0",
             "perl" : "5.012"
          }
       },
       "test" : {
          "requires" : {
+            "Test::Exception" : "0",
             "Test::More" : "0.98"
          }
       }

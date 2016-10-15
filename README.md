@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/Semantics3/Mojolicious-Plugin-ServiceContainer.svg?branch=master)](https://travis-ci.org/Semantics3/Mojolicious-Plugin-ServiceContainer)
 # NAME
 
 Mojolicious::Plugin::ServiceContainer - A Dependency Injection Container implementation.

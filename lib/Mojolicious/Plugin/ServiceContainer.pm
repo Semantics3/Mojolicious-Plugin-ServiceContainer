@@ -159,26 +159,24 @@ permit the creation of more service objects for the same service.
 The service definitions are loaded along with the plugin:
 
     plugin 'ServiceContainer' => {
-      services: {
-        google_auth => {
-          class => 'MyGoogleAuthService',
-          client_id => 'xxxx.xxxx.xxxx.xxxx',
-          client_secret => 'yyyy.yyyy.yyyy.yyyy',
-          ua => '$ua',
-          log => '$log'
-        },
-        mongo => {
-          class => 'Mango',
-          args => [
-            'mongodb://localhost'
-          ]
-        },
-        ua => {
-          helper => 'ua'
-        },
-        log => {
-          helper => 'log'
-        }
+      google_auth => {
+        class => 'MyGoogleAuthService',
+        client_id => 'xxxx.xxxx.xxxx.xxxx',
+        client_secret => 'yyyy.yyyy.yyyy.yyyy',
+        ua => '$ua',
+        log => '$log'
+      },
+      mongo => {
+        class => 'Mango',
+        args => [
+          'mongodb://localhost'
+        ]
+      },
+      ua => {
+        helper => 'ua'
+      },
+      log => {
+        helper => 'log'
       }
     }
 

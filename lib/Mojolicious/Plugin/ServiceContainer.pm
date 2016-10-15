@@ -8,7 +8,7 @@ use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Exception;
 use Mojo::Loader qw( load_class );
 
-our $VERSION = "1.0.0";
+our $VERSION = "1.0.1";
 
 sub register {
     my ( $plugin, $app, $config ) = @_;
@@ -161,10 +161,12 @@ The service definitions are loaded along with the plugin:
     plugin 'ServiceContainer' => {
       google_auth => {
         class => 'MyGoogleAuthService',
-        client_id => 'xxxx.xxxx.xxxx.xxxx',
-        client_secret => 'yyyy.yyyy.yyyy.yyyy',
-        ua => '$ua',
-        log => '$log'
+        args => {
+          client_id => 'xxxx.xxxx.xxxx.xxxx',
+          client_secret => 'yyyy.yyyy.yyyy.yyyy',
+          ua => '$ua',
+          log => '$log'
+        }
       },
       mongo => {
         class => 'Mango',

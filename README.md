@@ -32,10 +32,12 @@ The service definitions are loaded along with the plugin:
     plugin 'ServiceContainer' => {
       google_auth => {
         class => 'MyGoogleAuthService',
-        client_id => 'xxxx.xxxx.xxxx.xxxx',
-        client_secret => 'yyyy.yyyy.yyyy.yyyy',
-        ua => '$ua',
-        log => '$log'
+        args => {
+          client_id => 'xxxx.xxxx.xxxx.xxxx',
+          client_secret => 'yyyy.yyyy.yyyy.yyyy',
+          ua => '$ua',
+          log => '$log'
+        }
       },
       mongo => {
         class => 'Mango',

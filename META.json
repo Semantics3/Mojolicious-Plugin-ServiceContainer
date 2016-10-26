@@ -1,7 +1,7 @@
 {
    "abstract" : "A Dependency Injection Container for Mojolicious.",
    "author" : [
-      "Semantics3 Inc."
+      "Amarnath Ravikumar <amar@semantics3.com>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v3.0.4, CPAN::Meta::Converter version 2.142060",
@@ -65,8 +65,5 @@
          "web" : "https://github.com/Semantics3/Mojolicious-Plugin-ServiceContainer"
       }
    },
-   "version" : "1.0.1",
-   "x_contributors" : [
-      "amarnus <amar@semantics3.com>"
-   ]
+   "version" : "1.0.2"
 }
